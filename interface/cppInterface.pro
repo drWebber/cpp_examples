@@ -5,9 +5,17 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     document.cpp \
-    magazine.cpp
+    magazine.cpp \
+    entity.cpp \
+    entitydaoimpl.cpp
 
 HEADERS += \
     printable.h \
     document.h \
-    magazine.h
+    magazine.h \
+    dao.h \
+    entity.h \
+    entitydao.h \
+    entitydaoimpl.h
+
+DISTFILES +=
