@@ -2,7 +2,7 @@
 #define FOO_H
 
 #include <qstring.h>
-
+#include <qhash.h>
 
 namespace overriding {
 
@@ -27,6 +27,8 @@ public:
     bool operator >(Foo const &obj) const;
     bool operator !=(Foo const &obj) const;
     operator QString();
+
+    uint qHash(const Foo &foo, uint seed = 0);
 };
 
 }

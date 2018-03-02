@@ -49,5 +49,7 @@ int main(int argc, char *argv[])
         qDebug() << "foo1 < foo2";
     }
 
+    qDebug() << qHash(foo2);
+
     return a.exec();
 }

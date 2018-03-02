@@ -26,6 +26,11 @@ bool overriding::Foo::operator !=(const overriding::Foo &obj) const
     return !(*this == obj);
 }
 
+uint overriding::Foo::qHash(const overriding::Foo &foo, uint seed)
+{
+    return ::qHash(foo.getName(), seed);
+}
+
 overriding::Foo::operator QString()
 {
     return "id = " + QString::number(id) + "; name = " + name;
