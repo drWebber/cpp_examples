@@ -64,6 +64,10 @@ int main()
     cout << arr[0] << endl; // теперь уже чужая память, вроде 50495872,
                             // вместо нуля
 
+    int *ptr = NULL;
+    delete ptr; /* даже если под указателем NULL ошибки не возникнет */
+    ptr = new int(7);
+    cout << *ptr << endl;
 
     return 0;
 }
