@@ -6,13 +6,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+}
 
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::on_pbnStartRegular_clicked()
+{
     rc = new RegularClass();
     thread = new QThread(this);
     rc->moveToThread(thread);
 
     /* НЕВЕРНЫЙ ПУТЬ:
-       connect(t, SIGNAL(finished()), this, SLOT(on_regularClass_finished());
+       connect(thread, SIGNAL(finished()),
+            this, SLOT(on_regularClass_finished());
        НЕ СРАБОТАЕТ, т.к.:
        https://stackoverflow.com/questions/13460096/why-is-qthreadfinished-
                 signal-not-being-emitted
@@ -33,15 +42,32 @@ MainWindow::MainWindow(QWidget *parent) :
     thread->start();
 }
 
-MainWindow::~MainWindow()
+void MainWindow::on_regularClass_finished()
 {
-    delete ui;
+    qDebug() << "regulars class thread finished";
+}
+
+void MainWindow::createThread()
+{
+    QThread *th = new QThread(this);
+    Bar *bar = new Bar(jobs);
+
+    threads.insert(jobs, th);
+
+    bar->moveToThread(th);
+
+    connect(th, SIGNAL(started()), bar, SLOT(process()));
+    connect(bar, SIGNAL(finished(int)),
+            this, SLOT(on_barProcess_finished(int)));
+
+    th->start();
 }
 
 void MainWindow::on_pbnCreateThread_clicked()
 {
     Foo *foo = new Foo(fooList.count(), this);
     fooList.append(foo);
+
     foo->start();
 }
 
@@ -50,13 +76,44 @@ void MainWindow::on_pbnTerminateLast_clicked()
     int count = fooList.count() - 1;
     if (count >= 0) {
         Foo *foo = fooList[count];
+
         foo->terminate();
+
         fooList.removeLast();
+
         delete foo;
     }
 }
 
-void MainWindow::on_regularClass_finished()
+void MainWindow::on_barProcess_finished(int num)
 {
-    qDebug() << "regular class thread finished";
+    --jobs;
+
+    qDebug() << "bar #" << num << "is processed";
+
+    threads.value(num)->quit();
+    threads.remove(num);
+
+    if (jobs > 0) {
+        createThread();
+    }
+}
+
+void MainWindow::on_pbnGroup_clicked()
+{
+    jobs = 100;
+    /* ОБРАБОТКА ПАЧКИ ЗАДАЧ по THREADS_COUNT одновременно */
+    const int THREADS_COUNT = 3;
+    for (int i = 0; i < THREADS_COUNT; ++i) {
+        createThread();
+        --jobs;
+    }
+}
+
+void MainWindow::on_pbnTerminateGroup_clicked()
+{
+    jobs = 0;
+    foreach (QThread *th, threads) {
+        th->quit();
+    }
 }
