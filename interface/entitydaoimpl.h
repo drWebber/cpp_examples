@@ -9,6 +9,9 @@ using namespace std;
 
 class EntityDaoImpl : public EntityDao
 {
+public:
+    ~EntityDaoImpl();
+
     // Dao interface
 public:
     void create(Entity entity);

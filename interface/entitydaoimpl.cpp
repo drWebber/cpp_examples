@@ -2,6 +2,11 @@
 
 
 
+EntityDaoImpl::~EntityDaoImpl()
+{
+    // destructor
+}
+
 void EntityDaoImpl::create(Entity entity)
 {
     cout << "Creating the row " << entity.getId()  << endl;
